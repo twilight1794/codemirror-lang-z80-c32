@@ -1,26 +1,20 @@
-@top Program { expression* }
+@top Program { Lin* }
+@precedence { Mnemo, Num, Eti }
 
-@skip { space | LineComment }
-
-expression {
-  Identifier |
-  String |
-  Boolean |
-  Application { "(" expression* ")" }
-}
+Lin { EtiDec | EtiDec? Eti Args? }
+Args { Param ( "," Param)? }
+Param { Num | Eti | Dir }
+EtiDec { Eti ":" }
+Dir { "(" ("IX"|"IY"|"SP") ("+" | "-") (Num | Eti) ")" }
 
 @tokens {
-  Identifier { $[a-zA-Z_\-0-9]+ }
-
-  String { '"' (!["\\] | "\\" _)* '"' }
-
-  Boolean { "#t" | "#f" }
-
-  LineComment { ";" ![\n]* }
-
-  space { $[ \t\n\r]+ }
-
-  "(" ")"
+    Num { $[0-9A-F]+$[Hh]| $[0-9a-h]+$[Hh] | $[0-9]+ | $[0-7]+$[Oo] | $[01]+$[Bb] }
+    Mnemo { "ADD"|"add"|"CP"|"cp"|"LD"|"ld" }
+    Eti { $[A-Z]$[A-Z0-9]+ | $[a-z]$[a-z0-9]+ }
+    Esp { @whitespace }
+    Com { "#" ![\n]* }
 }
+
+@skip { Esp Com }
 
 @detectDelim
